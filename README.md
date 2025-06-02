@@ -61,7 +61,8 @@ cd annotate_V
 ```bash
 # 仮想環境の作成（推奨）
 python -m venv .venv
-
+# python 3.11.11で動かしてます
+#自分はcondaを使用しました
 # 仮想環境の有効化
 # Windows:
 .venv\Scripts\activate
