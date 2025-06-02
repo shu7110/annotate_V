@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>画像アノテーションツール</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+</head>
+<body>
+    <div class="container">        <header>
+            <h1>画像アノテーションツール</h1>            <div class="controls">
+                <input type="file" id="imageInput" accept="image/*" multiple>
+                <button id="prevBtn" disabled>前の画像</button>
+                <button id="nextBtn" disabled>次の画像</button>
+                <span id="imageCounter">0 / 0</span>                <div class="mode-toggle">
+                    <span class="mode-label">分類</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="modeToggle" name="mode">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="mode-label">物体検出</span>
+                </div>
+                <button id="settingsBtn" class="settings-btn" title="設定">⚙️</button>
+            </div>
+        </header>
+
+        <main>
+            <div class="workspace">
+                <div class="canvas-container">
+                    <canvas id="annotationCanvas"></canvas>
+                    <div id="imagePreview">
+                        <p>画像を選択してください</p>
+                    </div>
+                </div>                <div class="sidebar">
+                    <!-- 分類モード -->
+                    <div id="classificationPanel" class="panel">
+                        <h3>分類ラベル</h3>
+                        <p class="mode-description">数字キー(1-9)で素早く分類できます</p>
+                        <div class="label-input">
+                            <input type="text" id="classificationLabel" placeholder="ラベルを入力">
+                            <button id="addClassLabel">追加</button>
+                        </div>
+                        <div class="file-input">
+                            <input type="file" id="classificationFileInput" accept=".txt" style="display: none;">
+                            <button id="loadClassificationFile">ファイルからラベル読み込み</button>
+                        </div>
+                        <div class="label-list" id="classificationLabels"></div>
+                        <div class="current-classification">
+                            <h4>現在の分類</h4>
+                            <select id="currentClassification">
+                                <option value="">選択してください</option>
+                            </select>
+                        </div>
+
+                        <!-- ゼロショット予測パネル -->
+                        <div id="zeroShotPanel" class="panel">
+                            <h3>ゼロショット予測</h3>
+                            <div class="zero-shot-input">
+                                <textarea id="zeroShotPrompts" placeholder="予測したいラベルを1行に1つ入力&#10;例:&#10;猫&#10;犬&#10;車"></textarea>
+                                <button id="runZeroShot">予測実行</button>
+                            </div>
+                            <div class="zero-shot-results">
+                                <h4>予測結果</h4>
+                                <div id="zeroShotResults"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 物体検出モード -->
+                    <div id="detectionPanel" class="panel" style="display: none;">
+                        <div class="yolo-detection-toggle" style="margin-bottom: 15px;">
+                            <label class="switch">
+                                <input type="checkbox" id="yoloDetectionToggle">
+                                <span class="slider round"></span>
+                            </label>
+                            <span class="toggle-label">YOLO-World検出</span>
+                        </div>
+                        <div class="detection-controls">
+                            <h3>物体検出ラベル</h3>
+                            <div class="label-input">
+                                <input type="text" id="detectionLabel" placeholder="ラベルを入力">
+                                <button id="addDetectionLabel">追加</button>
+                            </div>
+                            <div class="file-input">
+                                <input type="file" id="detectionFileInput" accept=".txt" style="display: none;">
+                                <button id="loadDetectionFile">ファイルからラベル読み込み</button>
+                            </div>
+                            <div class="label-list" id="detectionLabels"></div>
+                            <div class="current-detection">
+                                <h4>描画用ラベル</h4>
+                                <select id="currentDetectionLabel">
+                                    <option value="">選択してください</option>
+                                </select>
+                            </div>
+                            <div class="bbox-list">
+                                <h4>バウンディングボックス</h4>
+                                <div id="bboxList"></div>
+                            </div>
+                            <button id="clearAllBoxes">全て削除</button>
+                        </div>
+                    </div>                    <div class="export-section">
+                        <h3>エクスポート</h3>
+                        <button id="exportJson">JSON形式で保存</button>
+                        <button id="exportCsv">CSV形式で保存</button>
+                        <button id="exportYolo">YOLO形式で保存</button>
+                    </div>
+                </div>
+            </div>        </main>
+    </div>
+
+    <!-- 設定モーダル -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>ショートカットキー設定</h2>
+                <span class="close" id="closeSettings">&times;</span>
+            </div>
+            <div class="modal-body">                <div class="shortcut-section">
+                    <h3>基本操作</h3>
+                    <div class="shortcut-item">
+                        <label>前の画像:</label>
+                        <input type="text" id="shortcut-prev" class="shortcut-input" maxlength="1" placeholder="キー">
+                        <span class="default-key">(デフォルト: ←)</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <label>次の画像:</label>
+                        <input type="text" id="shortcut-next" class="shortcut-input" maxlength="1" placeholder="キー">
+                        <span class="default-key">(デフォルト: →)</span>
+                    </div>                </div>
+
+                <div class="shortcut-section">
+                    <h3>物体検出操作</h3>
+                    <div class="shortcut-item">
+                        <label>全ボックス削除:</label>
+                        <input type="text" id="shortcut-clear-boxes" class="shortcut-input" maxlength="1" placeholder="キー">
+                        <span class="default-key">(デフォルト: Delete)</span>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button id="resetShortcuts" class="btn-secondary">デフォルトに戻す</button>
+                    <button id="saveShortcuts" class="btn-primary">保存</button>
+                </div>
+            </div>
+        </div>    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

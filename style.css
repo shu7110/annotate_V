@@ -1,0 +1,729 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+header h1 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.settings-btn {
+    margin-left: auto;
+    background: #95a5a6 !important;
+    font-size: 16px !important;
+    padding: 8px 12px !important;
+    border-radius: 50% !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.controls input[type="file"] {
+    padding: 8px;
+    border: 2px dashed #3498db;
+    border-radius: 4px;
+    background: #ecf0f1;
+}
+
+.controls button {
+    padding: 8px 16px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.controls button:hover:not(:disabled) {
+    background: #2980b9;
+}
+
+.controls button:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+}
+
+#imageCounter {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.settings-btn:hover {
+    background: #7f8c8d !important;
+}
+
+.workspace {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 20px;
+    height: calc(100vh - 200px);
+}
+
+.canvas-container {
+    position: relative;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#annotationCanvas {
+    max-width: 100%;
+    max-height: 100%;
+    cursor: crosshair;
+    display: none;
+}
+
+#imagePreview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: #7f8c8d;
+    font-size: 18px;
+}
+
+.sidebar {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+}
+
+/* トグルスイッチスタイル */
+.mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mode-label {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #3498db;
+    transition: .4s;
+    border-radius: 30px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #e74c3c;
+}
+
+input:checked + .slider:before {
+    transform: translateX(30px);
+}
+
+.panel {
+    margin-bottom: 25px;
+}
+
+.panel h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 16px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 5px;
+}
+
+.panel h4 {
+    color: #34495e;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.label-input {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.label-input input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.label-input button {
+    padding: 8px 12px;
+    background: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.label-input button:hover {
+    background: #229954;
+}
+
+.file-input {
+    margin-bottom: 15px;
+}
+
+.file-input button {
+    width: 100%;
+    padding: 8px 12px;
+    background: #8e44ad;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.file-input button:hover {
+    background: #732d91;
+}
+
+.label-list {
+    margin-bottom: 15px;
+}
+
+.label-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background: #ecf0f1;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.label-text {
+    flex: 1;
+}
+
+.label-text:before {
+    content: attr(data-shortcut);
+    color: #3498db;
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.label-item button {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.label-item button:hover {
+    background: #c0392b;
+}
+
+select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.bbox-list {
+    margin-bottom: 15px;
+}
+
+.bbox-item {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+
+.bbox-item .bbox-label {
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.bbox-item .bbox-coords {
+    color: #6c757d;
+    font-family: monospace;
+}
+
+.bbox-item button {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+.bbox-item button:hover {
+    background: #c0392b;
+}
+
+.export-section h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 16px;
+    border-bottom: 2px solid #f39c12;
+    padding-bottom: 5px;
+}
+
+.export-section button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: #f39c12;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.export-section button:hover {
+    background: #e67e22;
+}
+
+#exportYolo {
+    background: #9b59b6;
+    display: none; /* 初期状態では非表示（分類モードのため） */
+}
+
+#exportYolo:hover {
+    background: #8e44ad;
+}
+
+#clearAllBoxes {
+    width: 100%;
+    padding: 8px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+#clearAllBoxes:hover {
+    background: #c0392b;
+}
+
+.mode-description {
+    font-size: 12px;
+    color: #7f8c8d;
+    margin-bottom: 10px;
+    font-style: italic;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 1024px) {
+    .workspace {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr auto;
+    }
+    
+    .sidebar {
+        max-height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+      .controls > * {
+        width: 100%;
+    }
+}
+
+/* モーダルスタイル */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 24px;
+}
+
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.shortcut-section {
+    margin-bottom: 25px;
+}
+
+.shortcut-section h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 18px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 5px;
+}
+
+.shortcut-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 10px;
+}
+
+.shortcut-item label {
+    min-width: 140px;
+    font-weight: 500;
+    color: #34495e;
+}
+
+.shortcut-input {
+    width: 60px;
+    padding: 6px 10px;
+    border: 2px solid #bdc3c7;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.shortcut-input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
+
+.default-key {
+    color: #7f8c8d;
+    font-size: 12px;
+    font-style: italic;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+}
+
+.btn-primary {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.btn-primary:hover {
+    background: #2980b9;
+}
+
+.btn-secondary {
+    background: #95a5a6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.btn-secondary:hover {
+    background: #7f8c8d;
+}
+
+/* ゼロショット予測パネルのスタイル */
+.zero-shot-input {
+    margin-bottom: 15px;
+}
+
+.zero-shot-input textarea {
+    width: 100%;
+    height: 40px;  /* 高さを40pxに調整 */
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+#zeroShotPrompts {
+    width: 100%;
+    height: 100px;
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+#runZeroShot {
+    width: 100%;
+    padding: 8px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#runZeroShot:hover {
+    background-color: #45a049;
+}
+
+.use-loaded-labels-btn {
+    width: 100%;
+    padding: 8px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.use-loaded-labels-btn:hover {
+    background-color: #2980b9;
+}
+
+.zero-shot-results {
+    margin-top: 15px;
+}
+
+#zeroShotResults {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+.zero-shot-result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.zero-shot-result-item:last-child {
+    border-bottom: none;
+}
+
+.zero-shot-label {
+    font-weight: bold;
+}
+
+.zero-shot-confidence {
+    color: #666;
+}
+
+.yolo-detection-toggle {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.yolo-detection-toggle .switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin-right: 10px;
+}
+
+.yolo-detection-toggle .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.yolo-detection-toggle .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.yolo-detection-toggle .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+.yolo-detection-toggle input:checked + .slider {
+    background-color: #2196F3;
+}
+
+.yolo-detection-toggle input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.yolo-detection-toggle .toggle-label {
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+}
