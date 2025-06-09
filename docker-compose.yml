@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  annotate-tool:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      # モデルファイルを永続化
+      - ./models:/app/models
+      # 画像ファイル用ボリューム（オプション）
+      - ./images:/app/images
+      # ラベルファイル用ボリューム
+      - ./labels:/app/labels
+      # アノテーションデータ永続化
+      - ./data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+      - CONDA_DEFAULT_ENV=annotate
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
